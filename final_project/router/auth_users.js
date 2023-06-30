@@ -46,22 +46,28 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   if(isbn)
   {
   const currentBook= books[isbn];
-  const user=req.user;
-  const existingReview= currentBook.review[user];
-  if(existingReview && existingReview>0)
-  {
-    existingReview=req.body.review;
-    return res.status(200).send("Book review successfully updated.");
-  }
-  else{
-    currentBook.review.push({user:req.body.review});
-    return res.status(200).send("Book review successfully added.");
-  }
+  const user=req.user['data'];
+  currentBook.reviews[user] =req.body.review;
+  return res.status(200).send("Book review successfully updated.");
 }
 else{
     return res.status(404).json({message:"failed to add review."});
 }
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn= req.params.isbn;
+    if(isbn)
+    {
+    const currentBook= books[isbn];
+    const user=req.user['data'];
+    delete currentBook.reviews[user];
+    return res.status(200).send("Book review deleted successfully.");
+  }
+  else{
+      return res.status(404).json({message:"failed to add review."});
+  }
+  });
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;

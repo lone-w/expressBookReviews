@@ -40,15 +40,26 @@ else
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+    let myPromise = new Promise((resolve,reject) => {
+          resolve(JSON.stringify(books,null,4));
+        });
+        myPromise.then(x=>{
+            res.send(x);
+        });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
+   
     if(req?.params?.isbn)
-    {
-    const filteredBooks= books[req.params.isbn]
-    res.send(JSON.stringify(filteredBooks,null,4));
+    { 
+        let bookPromise = new Promise((resolve,reject) => {
+        const filteredBooks= books[req.params.isbn];
+        resolve(filteredBooks);
+          });
+        bookPromise.then(x=>{
+            res.send(x);
+        });
     }
     else
     { return res.status(404).json({message: "Requested book not found"});
@@ -60,9 +71,14 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
     if(req?.params?.author)
-    {        
+    { 
+        let bookPromise = new Promise((resolve,reject) => {            
     const filteredBooks= filterByAuthor(req?.params?.author);
-    res.send(JSON.stringify(filteredBooks,null,4));
+            resolve(filteredBooks);
+              }); 
+              bookPromise.then(book=>{
+                res.send(JSON.stringify(book,null,4));
+              });    
     }
     else
     { return res.status(404).json({message: "Requested book not found"});
@@ -74,9 +90,14 @@ const filterByTitle = (title) => {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     if(req?.params?.title)
-    {        
-    const filteredBooks= filterByTitle(req?.params?.title);
-    res.send(JSON.stringify(filteredBooks,null,4));
+    {     
+        let bookPromise = new Promise((resolve,reject) => {            
+            const filteredBooks= filterByTitle(req?.params?.title);
+                    resolve(filteredBooks);
+                      }); 
+                      bookPromise.then(book=>{
+                        res.send(JSON.stringify(book,null,4));
+                      });    
     }
     else
     { return res.status(404).json({message: "Requested book not found"});
